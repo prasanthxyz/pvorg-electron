@@ -1,0 +1,31 @@
+{
+  "galleriesPath": "__ROOT__/galleries",
+  "tags": ["t1", "t2", "t3"],
+  "videoRelations": {
+    "acme-jane-one.mp4": {
+      "excludedGalleries": ["G2"],
+      "excludedTags": ["t3"],
+      "galleries": ["G1", "Retired", "Café"],
+      "tags": ["t1", "t2"]
+    },
+    "globex-sam-three.mp4": {
+      "excludedGalleries": [],
+      "excludedTags": ["t2"],
+      "galleries": ["G2"],
+      "tags": []
+    },
+    "hooli-li-four.mp4": {
+      "excludedGalleries": ["G2"],
+      "excludedTags": [],
+      "galleries": [],
+      "tags": []
+    },
+    "oldstudio-x-gone.mp4": {
+      "excludedGalleries": ["G1"],
+      "excludedTags": [],
+      "galleries": [],
+      "tags": []
+    }
+  },
+  "videosPath": "__ROOT__/videos"
+}

@@ -1,0 +1,70 @@
+galleries:
+  - /Users/prasanth/Pictures/galleries/Beach Days
+  - /Users/prasanth/Pictures/galleries/City Lights
+  - /Users/prasanth/Pictures/galleries/Portraits/
+  - /Users/prasanth/Pictures/galleries/Old Trip
+tags:
+  - outdoor
+  - night
+  - Travel
+  - drone
+videoGalleries:
+  - - /Users/prasanth/Videos/acme-jane_doe-harbor_lights.mp4
+    - /Users/prasanth/Pictures/galleries/Beach Days
+  - - /Users/prasanth/Videos/acme-jane_doe-harbor_lights.mp4
+    - /Users/prasanth/Pictures/galleries/City Lights
+  - - /Users/prasanth/Videos/acme-jane_doe-harbor_lights.mp4
+    - /Users/prasanth/Pictures/galleries/Old Trip
+  - - D:\Videos\globex-sam_lee-desert_road.mp4
+    - /Users/prasanth/Pictures/galleries/Portraits/
+  - - /Users/prasanth/Videos/oldstudio-someone-missing_clip.mp4
+    - /Users/prasanth/Pictures/galleries/Beach Days
+  - - /Users/prasanth/Videos/Bad Name.mp4
+    - /Users/prasanth/Pictures/galleries/Beach Days
+videoTags:
+  - - /Users/prasanth/Videos/acme-jane_doe-harbor_lights.mp4
+    - outdoor
+  - - /Users/prasanth/Videos/acme-jane_doe-harbor_lights.mp4
+    - Travel
+  - - D:\Videos\globex-sam_lee-desert_road.mp4
+    - night
+  - - /Users/prasanth/Videos/initech-alex_kim-golden_hour.mkv
+    - drone
+  - - /Users/prasanth/Videos/oldstudio-someone-missing_clip.mp4
+    - night
+videos:
+  - filePath: /Users/prasanth/Videos/acme-jane_doe-harbor_lights.mp4
+    width: 1920
+    height: 1080
+    bitRate: 8000000
+    duration: 12.5
+    frameRate: 29.97
+    quality: 54054054.05
+  - filePath: D:\Videos\globex-sam_lee-desert_road.mp4
+    width: 1280
+    height: 720
+    bitRate: 4500000
+    duration: 3.2
+    frameRate: 25
+    quality: 16200000
+  - filePath: /Users/prasanth/Videos/initech-alex_kim-golden_hour.mkv
+    width: 3840
+    height: 2160
+    bitRate: 20000000
+    duration: 41
+    frameRate: 60
+    quality: 270000000
+  - filePath: /Users/prasanth/Videos/oldstudio-someone-missing_clip.mp4
+    width: 640
+    height: 480
+    bitRate: 1200000
+    duration: 7
+    frameRate: 30
+    quality: 1200000
+  - filePath: /Users/prasanth/Videos/Bad Name.mp4
+    width: 640
+    height: 360
+    bitRate: 900000
+    duration: 1.5
+    frameRate: 24
+    quality: 562500

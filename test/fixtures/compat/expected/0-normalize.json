@@ -1,0 +1,25 @@
+{
+  "galleriesPath": "__ROOT__/galleries",
+  "tags": ["t1", "t2", "t3"],
+  "videoRelations": {
+    "acme-jane-one.mp4": {
+      "excludedGalleries": [],
+      "excludedTags": [],
+      "galleries": ["Retired", "Café"],
+      "tags": ["t2"]
+    },
+    "globex-sam-three.mp4": {
+      "excludedGalleries": [],
+      "excludedTags": [],
+      "galleries": ["G1"],
+      "tags": []
+    },
+    "oldstudio-x-gone.mp4": {
+      "excludedGalleries": ["G1"],
+      "excludedTags": [],
+      "galleries": [],
+      "tags": []
+    }
+  },
+  "videosPath": "__ROOT__/videos"
+}
