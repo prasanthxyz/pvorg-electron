@@ -46,7 +46,7 @@ configuration file, `pvorg.json`.
 | Platform | Configuration | Videos | Galleries |
 |---|---|---|---|
 | macOS | `~/pvorg.json`, or the file named by `PVORG_CONFIG` | `videosPath` in the config | `galleriesPath` in the config |
-| Desktop (Electron) | Same as macOS; Settings can choose another file, which is remembered | `videosPath` | `galleriesPath` |
+| Desktop (Electron) | Same as macOS; a file chosen in Settings takes precedence over `PVORG_CONFIG` and is remembered until **Use Default** | `videosPath` | `galleriesPath` |
 | Web | Same as macOS, read and written by the server | `videosPath` | `galleriesPath` |
 | Android | `pvorg.json` in a root folder the user picks (Storage Access Framework) | `<root>/VID` | `<root>/GAL` |
 
@@ -321,7 +321,9 @@ that file into `pvorg.json`:
   decisions to write. Nothing is written until the user confirms.
 - **Mapping.** For each matched video and matched gallery, a pair → Yes, no
   pair → No. Each video–tag pair → Yes for that tag; other tags stay
-  Undecided. Unknown tag names are added to the vocabulary.
+  Undecided. Tag names match the vocabulary ignoring case, keeping the
+  existing spelling; unknown names are added to it. A video listed more than
+  once, or only in pairs, is merged into one entry by filename.
 - **Existing decisions win.** Only Undecided cells are filled; no Yes or No
   already in `pvorg.json` changes.
 - It never moves, copies or deletes files, and it is one atomic write
@@ -572,9 +574,10 @@ Rules:
 
 - **Typing always wins.** While a text field has focus, every key goes to
   the field, including the single-key shortcuts above. Esc in a search field
-  follows the platform convention: it clears the field on macOS, and leaves
-  the field while keeping its query on Android, Desktop and the Web. Clicking or
-  tapping elsewhere also leaves it, after which the shortcuts work again.
+  follows the platform convention: it clears the field on macOS and the Web,
+  and leaves the field while keeping its query on Android and Desktop.
+  Clicking or tapping elsewhere also leaves it, after which the shortcuts work
+  again.
 - **Scoped keys.** Viewer keys act only while the viewer is showing, and
   playback keys only in video mode. Elsewhere, arrows and Space keep their
   usual behavior.
@@ -635,7 +638,7 @@ Values are in points (macOS), dp (Android) or CSS px (web).
 
 | Role | Light | Dark | Use |
 |---|---|---|---|
-| Accent | platform/user accent | same | selection, primary actions, links |
+| Accent | platform/user accent; `#2563EB` on Web and Desktop | platform/user accent; `#3B82F6` on Web and Desktop | selection, primary actions, links |
 | Subtle fill / hover | primary at 6% / 10% | same | unselected chips, undecided cells, hover |
 | Selected chip fill / hover | accent at 17% / 24% | same | selected chips |
 | Hairline | system separator | same | dividers |
@@ -754,6 +757,7 @@ decision changes.
 | The Electron app adopts the shared `pvorg.json` library, with a one-time `pvorg.yml` importer. | One library that works in every app. Its old model (hand-added paths, yes-only pairs) couldn't be shared. |
 | Electron renderer is sandboxed and talks to the main process over typed IPC; media load through a restricted custom protocol; no local HTTP server. | The old local server accepted requests from any origin, so any web page could edit the library, and web security was switched off. |
 | Quality score normalizes bitrate to 640 × 480 at 30 fps. | The old formula multiplied by resolution, counting it twice; resolution is now its own column. |
+| Web and Desktop use a fixed blue accent. | Browsers don't expose the system accent; Desktop shares the web design system. |
 | Extras are specified once as optional capabilities, with per-app availability. | One app's extra features shouldn't fork the product's behavior. |
 | One shared spec for all apps. | One product, one source of truth; platform sections record the honest differences. |
 
@@ -913,8 +917,8 @@ Status of each app against this spec at the version above. ✓ conforms,
 | §4 navigation and page names | ✓ | ✓ | ✓ | ✓ |
 | §5 viewer, all states | ✓ | ✓ | ✓ | ✓ |
 | §6.1–6.7 Filters, Library, Mapping, Cleanup, Settings | ✓ | ✓ | ✓ | ✓ |
-| §7 commands and keyboard rules | ✓ | ✓ | ✓ | ✓ |
-| §8–11 design, accessibility, performance | ✓ | ✓ | ◐ no automated contrast audit | ◐ no TalkBack or large-font pass yet |
+| §7 commands and keyboard rules | ✓ | ◐ plain keys are tested through the page, not the OS menu, so no test proves a menu item never fires twice for one key press | ✓ | ✓ |
+| §8–11 design, accessibility, performance | ✓ | ◐ no automated contrast audit | ◐ no automated contrast audit | ◐ no TalkBack or large-font pass yet |
 | Preview generation (§3.2 step 5) | ✓ | ✓ | ✓ | — (by design, §15.1) |
 | Optional: video details and sort | — | ✓ | — | — |
 | Optional: regenerate contact sheet | — | ✓ | — | — |
