@@ -1,20 +1,18 @@
-import React from 'react'
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { ReactQueryDevtools } from 'react-query/devtools'
-import App from './App'
+import { HashRouter } from 'react-router-dom'
+import './state/appearance'
+import './styles/tokens.css'
+import './styles/base.css'
+import './styles/components.css'
+import './styles/layout.css'
+import './styles/pages.css'
+import App from './app/App'
 
-import 'rsuite/dist/rsuite.min.css'
-import './assets/index.css'
-
-const container = document.getElementById('root') as HTMLElement
-const root = createRoot(container)
-const queryClient = new QueryClient()
-root.render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <HashRouter>
       <App />
-    </QueryClientProvider>
-  </React.StrictMode>
+    </HashRouter>
+  </StrictMode>
 )

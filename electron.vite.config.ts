@@ -1,17 +1,19 @@
 import react from '@vitejs/plugin-react'
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import { defineConfig } from 'electron-vite'
 import { resolve } from 'path'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()]
+    build: { externalizeDeps: true }
+  },
+  preload: {
+    build: { externalizeDeps: true }
   },
   renderer: {
     resolve: {
-      alias: {
-        '@renderer': resolve('src/renderer/src')
-      }
+      alias: { '@renderer': resolve('src/renderer/src') }
     },
-    plugins: [react()]
+    plugins: [react()],
+    build: { target: 'chrome140' }
   }
 })

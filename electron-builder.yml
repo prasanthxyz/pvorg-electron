@@ -1,43 +1,41 @@
 appId: com.wordpress.prasanthxyz.pvorg
 productName: P Video Organizer
+copyright: Copyright © Prasanth P
 directories:
   buildResources: build
+  output: dist
 files:
-  - '!**/.vscode/*'
-  - '!src/*'
-  - '!electron.vite.config.{js,ts,mjs,cjs}'
-  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
-  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
-  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
-asar: false
+  - out/**
+  - resources/**
+  - package.json
+  - '!**/*.map'
+asar: true
+mac:
+  category: public.app-category.entertainment
+  target:
+    - dmg
+  entitlementsInherit: build/entitlements.mac.plist
+  hardenedRuntime: true
+  notarize: false
+dmg:
+  artifactName: ${name}-${version}.${ext}
 win:
   executableName: pvorg
+  target:
+    - nsis
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
-mac:
-  entitlementsInherit: build/entitlements.mac.plist
-  extendInfo:
-    - NSCameraUsageDescription: Application requests access to the device's camera.
-    - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
-    - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
-    - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
-  notarize: false
-dmg:
-  artifactName: ${name}-${version}.${ext}
 linux:
+  executableName: pvorg
   target:
     - AppImage
-    - snap
     - deb
-  maintainer: electronjs.org
-  category: Utility
+  maintainer: Prasanth P <prasanthxyz@gmail.com>
+  category: AudioVideo
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
-publish:
-  provider: github
-  owner: prasanthxyz
-  repo: P-Video-Organizer
+publish: null

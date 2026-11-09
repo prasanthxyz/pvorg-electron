@@ -1,0 +1,140 @@
+/* Design tokens (SPEC §8). Chrome follows the appearance; the stage is always dark. */
+
+:root {
+  /* Spacing scale */
+  --space-0: 2px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* Radius */
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Type — system stack, rem so browser zoom and text size apply */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-md: 0.875rem;
+  --text-lg: 1rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 2rem;
+  --leading: 1.45;
+
+  /* Layout */
+  --sidebar-width: 248px;
+  --header-height: 64px;
+  --control-height: 32px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --duration-fast: 120ms;
+  --duration-medium: 180ms;
+
+  /* Stage — identical in every appearance */
+  --stage: #0f0f0f;
+  --stage-raised: #1f1f1f;
+  --stage-hairline: rgb(255 255 255 / 0.08);
+  --stage-hairline-solid: #272727;
+  --stage-text: rgb(255 255 255 / 0.94);
+  --stage-text-secondary: rgb(255 255 255 / 0.62);
+}
+
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+  --bg: #ffffff;
+  --bg-sidebar: #f7f7f8;
+  --bg-raised: #ffffff;
+  --bg-sunken: #f4f4f5;
+  --text: #18181b;
+  --text-secondary: #52525b;
+  --text-tertiary: #71717a;
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+  --hairline: #e4e4e7;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-text: #1d4ed8;
+  --on-accent: #ffffff;
+  --accent-tint: rgb(37 99 235 / 0.12);
+  --accent-tint-hover: rgb(37 99 235 / 0.18);
+  --subtle-fill: rgb(24 24 27 / 0.06);
+  --subtle-fill-hover: rgb(24 24 27 / 0.1);
+  --placeholder: rgb(24 24 27 / 0.08);
+  --danger: #c81e1e;
+  --danger-hover: #a91b1b;
+  --danger-tint: rgb(200 30 30 / 0.1);
+  --warning: #b45309;
+  --warning-tint: rgb(217 119 6 / 0.1);
+  --warning-border: rgb(217 119 6 / 0.3);
+  --critical-tint: rgb(200 30 30 / 0.08);
+  --critical-border: rgb(200 30 30 / 0.3);
+  --decision-yes: #1a8740;
+  --decision-no: #cc2121;
+  --pending: #ea580c;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.16), 0 2px 6px rgb(0 0 0 / 0.08);
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px rgb(37 99 235 / 0.7);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #18181b;
+  --bg-sidebar: #121214;
+  --bg-raised: #232327;
+  --bg-sunken: #121214;
+  --text: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #8e8e98;
+  --border: #2e2e33;
+  --border-strong: #3f3f46;
+  --hairline: #2a2a2f;
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
+  --accent-text: #7cb2ff;
+  --on-accent: #ffffff;
+  --accent-tint: rgb(59 130 246 / 0.2);
+  --accent-tint-hover: rgb(59 130 246 / 0.28);
+  --subtle-fill: rgb(244 244 245 / 0.07);
+  --subtle-fill-hover: rgb(244 244 245 / 0.12);
+  --placeholder: rgb(244 244 245 / 0.08);
+  --danger: #ef4444;
+  --danger-hover: #f87171;
+  --danger-tint: rgb(239 68 68 / 0.15);
+  --warning: #fbbf24;
+  --warning-tint: rgb(251 191 36 / 0.1);
+  --warning-border: rgb(251 191 36 / 0.3);
+  --critical-tint: rgb(239 68 68 / 0.1);
+  --critical-border: rgb(239 68 68 / 0.35);
+  --decision-yes: #45cc73;
+  --decision-no: #ff6b66;
+  --pending: #ff9f0a;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 16px 40px rgb(0 0 0 / 0.55), 0 2px 8px rgb(0 0 0 / 0.35);
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px rgb(96 165 250 / 0.85);
+}
+
+/* Anything on the stage uses dark-appearance values regardless of the theme. */
+.on-stage {
+  color-scheme: dark;
+  --text: var(--stage-text);
+  --text-secondary: var(--stage-text-secondary);
+  --text-tertiary: rgb(255 255 255 / 0.5);
+  --subtle-fill: rgb(255 255 255 / 0.08);
+  --subtle-fill-hover: rgb(255 255 255 / 0.14);
+  --bg: var(--stage);
+  --bg-raised: #26262a;
+  --border: rgb(255 255 255 / 0.14);
+  --border-strong: rgb(255 255 255 / 0.22);
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
+  --accent-text: #7cb2ff;
+  --focus-ring: 0 0 0 2px var(--stage), 0 0 0 4px rgb(96 165 250 / 0.85);
+}
