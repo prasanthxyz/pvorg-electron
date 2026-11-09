@@ -7,7 +7,7 @@
 > in one repository and copy it to the other three in the same change. The
 > version line below identifies the copy.
 >
-> **Version 1.5 · 2026-11-09**
+> **Version 1.6 · 2026-11-09**
 
 **PP Video Organizer** (*pvorg* for short, the name of its library files and
 identifiers, §4.2) is a single-user tool for browsing
@@ -209,9 +209,8 @@ On launch and on **Reload Library**, behind a progress screen:
 4. **Cleaning Up Previews**: remove orphaned assets (§3.4).
 5. **Preparing Previews**: for each video, generate a missing contact sheet
    and missing metadata. Progress is determinate and names the current file
-   ("6 of 22 · filename"). Nothing else holds up startup: platform extras
-   such as the web app's seek-preview sprites are made afterwards, in the
-   background.
+   ("6 of 22 · filename"). On Web this step also makes the seek-preview
+   sprite (§14), and the library opens once it's done.
 
 Reload resets filters to their defaults. Unsaved mapping changes survive a
 reload, except for videos that no longer exist. A failure shows the error
@@ -811,7 +810,7 @@ decision changes.
 | Extras are specified once as optional capabilities, with per-app availability. | One app's extra features shouldn't fork the product's behavior. |
 | The app is called PP Video Organizer in every app; `pvorg` stays the technical name. | One product name everywhere. Renaming files and identifiers would break existing libraries and installs. |
 | The sidebar can be hidden, and the choice is remembered. | The viewer and the mapping matrices benefit from the full width; a remembered choice suits a single-user tool. |
-| Web seek-preview sprites are made in the background from keyframes, and failures aren't retried. | Decoding every frame of every video before the library opened made a first launch on a real library take minutes, and long videos timed out and were retried on every launch. |
+| Web seek-preview sprites are made from keyframes during Preparing Previews, and failures aren't retried. | Decoding every frame made a first launch on a real library take minutes, and long videos timed out and were retried on every launch. The library still opens only once sprites are done, so every video has its scrubber preview. |
 | One shared spec for all apps. | One product, one source of truth; platform sections record the honest differences. |
 
 ---
@@ -877,15 +876,13 @@ decision changes.
   lives in the More menu, because the browser owns ⌘R / Ctrl+R.
 - **Previews.** Seek previews use a server-generated sprite sheet and VTT
   (one tile every 2 s).
-  - The server makes missing sprites in the background once the library is
-    ready, decoding keyframes only, so each tile shows the nearest earlier
-    keyframe. Until a video's sprite exists, its scrubber has no frame
-    preview.
+  - The server makes missing sprites during Preparing Previews (§3.2),
+    decoding keyframes only, so each tile shows the nearest earlier keyframe.
+    A video without a sprite has no frame preview on its scrubber.
   - A video whose sprite fails isn't tried again until its file changes
     (size or modification time); failures are remembered in the web cache
     folder.
-  - Reloading the library or stopping the server cancels the work in
-    progress.
+  - Stopping the server cancels the sprite in progress and its ffmpeg.
 - **Configuration.** `~/pvorg.json` or `PVORG_CONFIG`, read on the server.
 - **Verification.**
   - Backend unit tests.
