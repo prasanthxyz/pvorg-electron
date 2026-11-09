@@ -44,8 +44,11 @@ describe('parsing pvorg.yml', () => {
     expect(baseName('D:\\Videos\\x-y-z.mp4')).toBe('x-y-z.mp4')
   })
 
-  it('rejects files that aren’t a pvorg library', () => {
+  it('rejects files that aren’t a PP Video Organizer library', () => {
     expect(() => parseOldLibrary('just: text')).toThrow(ImportError)
+    expect(() => parseOldLibrary('just: text')).toThrow(
+      'pvorg.yml doesn’t look like a PP Video Organizer library.'
+    )
     expect(() => parseOldLibrary('videos: [1, 2]')).toThrow(/can’t read/)
     expect(() => parseOldLibrary('videoTags: [[a]]')).toThrow(/pairs/)
     expect(() => parseOldLibrary('videos: [unclosed')).toThrow(/isn’t valid YAML/)

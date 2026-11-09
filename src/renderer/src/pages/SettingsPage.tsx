@@ -24,7 +24,7 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null)
 
   useEffect(() => {
-    document.title = 'Settings – P Video Organizer'
+    document.title = 'Settings – PP Video Organizer'
     let cancelled = false
     api
       .settings()
@@ -40,6 +40,7 @@ export default function SettingsPage() {
   const shortcuts: [string, string[]][] = [
     ['Go to Viewer', ['V']],
     ['Go to Filters', ['C']],
+    ['Hide / show sidebar', [mac ? '⌃⌘S' : 'Ctrl+\\']],
     ['Contact sheet / video', ['P']],
     ['Previous / next combination', ['B', 'N']],
     ['Exclude Pairing', ['⌫']],
@@ -111,7 +112,7 @@ export default function SettingsPage() {
             />
             <div className="settings-row settings-row--actions">
               <span className="settings-row__note">
-                Choose another pvorg.json to switch libraries. pvorg remembers it.
+                Choose another pvorg.json to switch libraries. PP Video Organizer remembers it.
               </span>
               <span className="settings-row__buttons">
                 {settings?.configSource === 'settings' && (

@@ -32,6 +32,7 @@ export interface Settings {
   videosPath: string | null
   galleriesPath: string | null
   appearance: Appearance
+  sidebarHidden: boolean
   tools: { ffmpeg: string | null; ffprobe: string | null }
 }
 
@@ -195,6 +196,7 @@ export type Command =
         | 'mute'
         | 'fullScreen'
         | 'addTag'
+        | 'toggleSidebar'
         | 'settingsChanged'
     }
   | { type: 'jump'; tenth: number }
@@ -212,4 +214,6 @@ export interface MenuState {
   hasSelection: boolean
   hasVideos: boolean
   pendingChanges: number
+  /** The sidebar can be hidden: false while navigation is the narrow-window drawer. */
+  sidebarToggle: boolean
 }

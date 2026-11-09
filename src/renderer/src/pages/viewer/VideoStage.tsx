@@ -165,8 +165,8 @@ export const VideoStage = forwardRef<PlayerHandle, Props>(function VideoStage(
           }
         >
           {UNPLAYABLE.has(ext)
-            ? `pvorg can’t play .${ext} files. Open the video in your default app, or re-encode it to MP4.`
-            : 'The video couldn’t be opened. The file may be damaged or use a codec pvorg can’t play.'}
+            ? `PP Video Organizer can’t play .${ext} files. Open the video in your default app, or re-encode it to MP4.`
+            : 'The video couldn’t be opened. The file may be damaged or use a codec PP Video Organizer can’t play.'}
         </EmptyState>
       </div>
     )

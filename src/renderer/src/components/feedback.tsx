@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { dismissToast, toast } from '../state/feedback'
 import { useStore } from '../state/store'
 import { Icon, type IconName } from './Icon'
+import { SidebarToggle } from './SidebarToggle'
 
 export function EmptyState({
   icon,
@@ -115,6 +116,7 @@ export function PageHeader({
 }) {
   return (
     <header className="page-header">
+      <SidebarToggle />
       <div className="page-header__text">
         <h1 id={titleId} className="page-header__title truncate" title={title}>
           {title}

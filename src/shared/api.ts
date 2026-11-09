@@ -28,6 +28,7 @@ export interface PvorgApi {
   reload(): { started: boolean }
   settings(): Settings
   setAppearance(choice: Appearance): Settings
+  setSidebarHidden(hidden: boolean): { hidden: boolean }
   chooseLibraryFile(): { chosen: boolean }
   useDefaultLibrary(): { changed: boolean }
 
@@ -75,6 +76,7 @@ export const METHODS: readonly Method[] = [
   'reload',
   'settings',
   'setAppearance',
+  'setSidebarHidden',
   'chooseLibraryFile',
   'useDefaultLibrary',
   'viewer',

@@ -116,7 +116,7 @@ export default function ViewerPage() {
 
   const current = viewer?.current ?? null
   useEffect(() => {
-    document.title = current ? `${current.video.title} – P Video Organizer` : 'P Video Organizer'
+    document.title = current ? `${current.video.title} – PP Video Organizer` : 'PP Video Organizer'
   }, [current])
 
   // Actions run one at a time, in the order they were requested, and each reads the
@@ -346,7 +346,7 @@ function ViewerEmpty({
           title="No Videos"
           actions={<Button onClick={() => void reloadLibrary()}>Reload Library</Button>}
         >
-          pvorg didn’t find any videos in <code>{empty.videosPath}</code>.
+          PP Video Organizer didn’t find any videos in <code>{empty.videosPath}</code>.
         </EmptyState>
       )
     case 'noGalleries':

@@ -7,7 +7,7 @@ function installHint(platform: string | undefined): string {
   if (platform === 'darwin')
     return 'Install ffmpeg with Homebrew (brew install ffmpeg), then reload the library.'
   if (platform === 'win32')
-    return 'Install ffmpeg with winget (winget install ffmpeg), then restart pvorg.'
+    return 'Install ffmpeg with winget (winget install ffmpeg), then restart PP Video Organizer.'
   return 'Install ffmpeg with your package manager (for example, sudo apt install ffmpeg), then reload the library.'
 }
 

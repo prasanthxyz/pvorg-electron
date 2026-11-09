@@ -46,7 +46,7 @@ export default function MappingPage({ kind }: { kind: MappingKind }) {
   const title = kind === 'galleries' ? 'Gallery Mapping' : 'Tag Mapping'
 
   useEffect(() => {
-    document.title = `${title} – P Video Organizer`
+    document.title = `${title} – PP Video Organizer`
     let cancelled = false
     api
       .mapping(kind)

@@ -1,4 +1,5 @@
-/* App shell: persistent sidebar on wide screens, top bar + drawer on narrow ones (SPEC §14). */
+/* App shell: persistent sidebar on wide screens, top bar + drawer on narrow ones (SPEC §14).
+   The sidebar can be hidden on wide screens (SPEC §4.1). */
 
 .shell {
   display: grid;
@@ -12,9 +13,47 @@
   grid-area: sidebar;
   display: flex;
   flex-direction: column;
+  min-width: 0;
   min-height: 0;
+  overflow: hidden;
   border-right: 1px solid var(--hairline);
   background: var(--bg-sidebar);
+}
+
+/* Full width at any column width, pinned to the trailing edge: it slides out to the left. */
+.sidebar__content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-self: flex-end;
+  width: calc(var(--sidebar-width) - 1px);
+  min-height: 0;
+}
+
+/* Only while toggling (SPEC §8.5); the base styles make it instant with reduced motion. */
+.shell--animating {
+  transition: grid-template-columns var(--duration-sidebar) var(--ease-out);
+}
+
+@media (min-width: 900px) {
+  .shell[data-sidebar='hidden'] {
+    grid-template-columns: 0 minmax(0, 1fr);
+  }
+
+  .shell[data-sidebar='hidden'] .sidebar {
+    visibility: hidden;
+  }
+
+  /* Stays painted until it has slid out. */
+  .shell--animating[data-sidebar='hidden'] .sidebar {
+    transition: visibility 0s linear var(--duration-sidebar);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell--animating[data-sidebar='hidden'] .sidebar {
+    transition-delay: 0s;
+  }
 }
 
 .topbar {
@@ -250,6 +289,31 @@
 }
 
 /* ---------- Page header and scrolling body ---------- */
+
+/* Leading edge of every page header; the glyph lines up with the page padding. */
+.sidebar-toggle {
+  position: relative;
+  margin: 0 -4px 0 -7px;
+}
+
+/* Unsaved mapping changes while the sidebar, and its badges, are hidden. */
+.sidebar-toggle--pending::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pending);
+  box-shadow: 0 0 0 2px var(--bg);
+}
+
+@media (max-width: 899px) {
+  .sidebar-toggle {
+    display: none;
+  }
+}
 
 .page-header {
   display: flex;

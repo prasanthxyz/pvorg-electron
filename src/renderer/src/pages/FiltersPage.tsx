@@ -72,7 +72,7 @@ export default function FiltersPage() {
   })
 
   useEffect(() => {
-    document.title = 'Filters – P Video Organizer'
+    document.title = 'Filters – PP Video Organizer'
     let cancelled = false
     api
       .filters()

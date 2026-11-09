@@ -261,6 +261,12 @@ const paths: Record<string, React.ReactNode> = {
       <circle cx="12" cy="7.8" r="1" fill="currentColor" stroke="none" />
     </>
   ),
+  sidebarLeft: (
+    <>
+      <rect x="3" y="4.5" width="18" height="15" rx="2.5" />
+      <path d="M9.5 4.5v15M5.75 8.5h1.25M5.75 11h1.25" />
+    </>
+  ),
   sidebarRight: (
     <>
       <rect x="3" y="4.5" width="18" height="15" rx="2.5" />

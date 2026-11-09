@@ -19,6 +19,7 @@ import * as path from 'path'
 import type { Appearance, Command, MenuState } from '../shared/types'
 import { registerIpc, statusPayload, type IpcContext } from './ipc'
 import { Library } from './library/library'
+import { APP_NAME, userDataFolder } from './identity'
 import { buildMenu, INITIAL_MENU_STATE } from './menu'
 import {
   APP_ORIGIN,
@@ -36,8 +37,17 @@ const HOMEPAGE = 'https://github.com/prasanthxyz/PP-Video-Organizer'
 const isDev = !app.isPackaged
 const devServer = isDev ? process.env.ELECTRON_RENDERER_URL : undefined
 
-// Test and QA runs keep their preferences and caches out of the user's data folder.
-if (process.env.PVORG_USER_DATA) app.setPath('userData', path.resolve(process.env.PVORG_USER_DATA))
+// Settings stay in the same folder whatever the app is called (test and QA runs use their own),
+// then the app takes its display name for menus and the About panel (SPEC §4.2).
+app.setPath('userData', userDataFolder(app.getPath('appData')))
+app.setName(APP_NAME)
+app.setAboutPanelOptions({
+  applicationName: APP_NAME,
+  applicationVersion: app.getVersion(),
+  copyright: 'Copyright © Prasanth P',
+  // macOS shows the bundle version in parentheses; in development that's Electron's.
+  ...(process.platform === 'darwin' ? { version: '' } : {})
+})
 
 protocol.registerSchemesAsPrivileged([
   { scheme: APP_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true } },
@@ -82,13 +92,15 @@ function start(): void {
   }
 
   const refreshMenu = (force = false): void => {
-    const key = JSON.stringify([menuState, settings.get().appearance])
+    const { appearance, sidebarHidden } = settings.get()
+    const key = JSON.stringify([menuState, appearance, sidebarHidden])
     if (!force && key === lastMenu) return
     lastMenu = key
     Menu.setApplicationMenu(
       buildMenu({
         state: menuState,
-        appearance: settings.get().appearance,
+        appearance,
+        sidebarHidden,
         isDev,
         homepage: HOMEPAGE,
         send: (command: Command) => {
@@ -123,6 +135,7 @@ function start(): void {
     settings,
     isTrustedSender,
     applyAppearance,
+    onPreferences: () => refreshMenu(),
     importFiles: new Set(),
     onMenuState: (state) => {
       menuState = state
@@ -203,7 +216,7 @@ function start(): void {
       minWidth: 960,
       minHeight: 600,
       show: false,
-      title: 'P Video Organizer',
+      title: APP_NAME,
       backgroundColor: dark ? '#1e1e1e' : '#f5f5f7',
       ...(process.platform === 'linux' ? { icon } : {}),
       webPreferences: {

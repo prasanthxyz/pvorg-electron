@@ -12,6 +12,7 @@ import type { Appearance, Command, MenuState } from '../shared/types'
 export interface MenuContext {
   state: MenuState
   appearance: Appearance
+  sidebarHidden: boolean
   isDev: boolean
   send: (command: Command) => void
   setAppearance: (choice: Appearance) => void
@@ -27,7 +28,8 @@ export const INITIAL_MENU_STATE: MenuState = {
   canRedo: null,
   hasSelection: false,
   hasVideos: false,
-  pendingChanges: 0
+  pendingChanges: 0,
+  sidebarToggle: false
 }
 
 export function buildMenu(ctx: MenuContext): Menu {
@@ -158,6 +160,16 @@ export function buildMenu(ctx: MenuContext): Menu {
       label: 'View',
       submenu: [
         {
+          // A real accelerator: it has modifiers, so it never takes a key from a text field,
+          // and the page doesn't handle it too (SPEC §4.1, §7.1).
+          id: 'toggleSidebar',
+          label: ctx.sidebarHidden ? 'Show Sidebar' : 'Hide Sidebar',
+          accelerator: mac ? 'Ctrl+Cmd+S' : 'Ctrl+\\',
+          enabled: ready && state.sidebarToggle,
+          click: command('toggleSidebar')
+        },
+        { type: 'separator' },
+        {
           label: 'Appearance',
           submenu: (['system', 'light', 'dark'] as const).map((choice) => ({
             id: `appearance-${choice}`,
@@ -241,7 +253,7 @@ export function buildMenu(ctx: MenuContext): Menu {
       role: 'help',
       submenu: [
         {
-          label: 'pvorg on GitHub',
+          label: 'PP Video Organizer on GitHub',
           click: () => void shell.openExternal(ctx.homepage)
         }
       ]

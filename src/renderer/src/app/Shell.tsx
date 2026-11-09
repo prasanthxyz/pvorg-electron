@@ -6,6 +6,7 @@ import { IconButton } from '../components/controls'
 import { Icon, type IconName } from '../components/Icon'
 import { openMenuFrom } from '../components/Menu'
 import { changeCount, mappingSessions } from '../state/mapping'
+import { narrowWindow, SIDEBAR_ID, sidebarAnimating, sidebarHidden } from '../state/sidebar'
 import { reloadLibrary, status } from '../state/status'
 import { useStore } from '../state/store'
 import { counted } from './format'
@@ -53,7 +54,7 @@ function Navigation({ onNavigate }: { onNavigate?: () => void }) {
     <>
       <div className="nav__brand">
         <Icon name="clapper" size={20} />
-        <span>pvorg</span>
+        <span>PP Video Organizer</span>
       </div>
       <nav className="nav__groups" aria-label="Pages">
         {groups.map((group) => (
@@ -134,6 +135,9 @@ export function Shell({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const drawer = useRef<HTMLDialogElement>(null)
   const location = useLocation()
+  const hidden = useStore(sidebarHidden) === true
+  const narrow = useStore(narrowWindow)
+  const animating = useStore(sidebarAnimating)
 
   useEffect(() => {
     if (drawerOpen) drawer.current?.showModal()
@@ -143,17 +147,22 @@ export function Shell({ children }: { children: ReactNode }) {
   useEffect(() => setDrawerOpen(false), [location.pathname])
 
   return (
-    <div className="shell">
+    <div
+      className={`shell${animating ? ' shell--animating' : ''}`}
+      data-sidebar={hidden ? 'hidden' : 'shown'}
+    >
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <aside className="sidebar" aria-label="Sidebar">
-        <Navigation />
+      <aside id={SIDEBAR_ID} className="sidebar" aria-label="Sidebar" inert={hidden && !narrow}>
+        <div className="sidebar__content">
+          <Navigation />
+        </div>
       </aside>
       <header className="topbar">
         <IconButton icon="menu" label="Open navigation" onClick={() => setDrawerOpen(true)} />
         <span className="topbar__brand">
-          <Icon name="clapper" size={18} /> pvorg
+          <Icon name="clapper" size={18} /> PP Video Organizer
         </span>
       </header>
       <dialog

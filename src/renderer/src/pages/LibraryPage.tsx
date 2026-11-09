@@ -84,7 +84,7 @@ export default function LibraryPage() {
   const search = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    document.title = 'Library – P Video Organizer'
+    document.title = 'Library – PP Video Organizer'
     let cancelled = false
     api
       .library()

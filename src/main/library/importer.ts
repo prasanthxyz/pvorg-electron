@@ -44,7 +44,7 @@ function strings(value: unknown, key: string): string[] {
       const filePath = (item as { filePath: unknown }).filePath
       if (typeof filePath === 'string') return filePath
     }
-    throw new ImportError(`“${key}” contains an entry pvorg can’t read.`)
+    throw new ImportError(`“${key}” contains an entry PP Video Organizer can’t read.`)
   })
 }
 
@@ -74,11 +74,11 @@ export function parseOldLibrary(text: string, name = 'pvorg.yml'): OldLibrary {
     throw new ImportError(`${name} isn’t valid YAML: ${(error as Error).message.split('\n')[0]}`)
   }
   if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-    throw new ImportError(`${name} doesn’t look like a pvorg library.`)
+    throw new ImportError(`${name} doesn’t look like a PP Video Organizer library.`)
   }
   const d = data as Record<string, unknown>
   if (!['videos', 'galleries', 'videoGalleries', 'videoTags'].some((key) => key in d)) {
-    throw new ImportError(`${name} doesn’t look like a pvorg library.`)
+    throw new ImportError(`${name} doesn’t look like a PP Video Organizer library.`)
   }
   return {
     videos: strings(d.videos, 'videos'),

@@ -1,4 +1,4 @@
-/** App preferences in `<userData>/settings.json`: appearance and the chosen library file. */
+/** App preferences in `<userData>/settings.json`: appearance, the chosen library file, the sidebar. */
 
 import { promises as fs, readFileSync } from 'fs'
 import * as path from 'path'
@@ -9,9 +9,11 @@ export interface Preferences {
   appearance: Appearance
   /** A pvorg.json chosen in Settings, remembered across launches. */
   libraryFile: string | null
+  /** The sidebar was hidden (SPEC §4.1); shown is the default. */
+  sidebarHidden: boolean
 }
 
-const DEFAULTS: Preferences = { appearance: 'dark', libraryFile: null }
+const DEFAULTS: Preferences = { appearance: 'dark', libraryFile: null, sidebarHidden: false }
 
 export class SettingsStore {
   private value: Preferences
@@ -30,7 +32,8 @@ export class SettingsStore {
         libraryFile:
           typeof data.libraryFile === 'string' && path.isAbsolute(data.libraryFile)
             ? data.libraryFile
-            : null
+            : null,
+        sidebarHidden: data.sidebarHidden === true
       }
     } catch {
       return { ...DEFAULTS }

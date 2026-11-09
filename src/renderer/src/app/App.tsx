@@ -18,6 +18,7 @@ import { loadAppearance } from '../state/appearance'
 import { bumpData, redo, showError, undo, undoState } from '../state/feedback'
 import { librarySelection } from '../state/library'
 import { changeCount, hasAnyPending, mappingSessions } from '../state/mapping'
+import { loadSidebar, narrowWindow, sidebarHidden, toggleSidebar } from '../state/sidebar'
 import { reloadLibrary, status, watchStatus } from '../state/status'
 import { useStore } from '../state/store'
 import { installKeyboard, isEditable, isModalOpen, menuBits, runPageCommand } from './shortcuts'
@@ -32,7 +33,7 @@ function NotFound() {
       title="Page Not Found"
       actions={<Button onClick={() => navigate('/')}>Open Viewer</Button>}
     >
-      This page isn’t part of pvorg.
+      This page isn’t part of PP Video Organizer.
     </EmptyState>
   )
 }
@@ -81,6 +82,7 @@ function useMenuState(ready: boolean) {
   const selection = useStore(librarySelection)
   const galleries = changeCount(useStore(mappingSessions.galleries).pending)
   const tags = changeCount(useStore(mappingSessions.tags).pending)
+  const narrow = useStore(narrowWindow)
   const page = pageOf(location.pathname)
   const last = useRef('')
   useEffect(() => {
@@ -93,13 +95,14 @@ function useMenuState(ready: boolean) {
       canRedo: undos.redo.at(-1)?.label ?? null,
       hasSelection: selection.size > 0,
       hasVideos: !!bits.hasVideos,
-      pendingChanges: page === 'galleries' ? galleries : page === 'tags' ? tags : 0
+      pendingChanges: page === 'galleries' ? galleries : page === 'tags' ? tags : 0,
+      sidebarToggle: ready && !narrow
     }
     const key = JSON.stringify(state)
     if (key === last.current) return
     last.current = key
     void api.setMenuState(state).catch(() => undefined)
-  }, [ready, page, bits, undos, selection, galleries, tags])
+  }, [ready, page, bits, undos, selection, galleries, tags, narrow])
 }
 
 /** Text fields keep their own undo and selection: the editing command a menu role would send. */
@@ -111,12 +114,14 @@ export default function App() {
   const current = useStore(status)
   const navigate = useNavigate()
   const ready = current?.phase === 'ready'
+  const sidebarLoaded = useStore(sidebarHidden) !== null
   const readyRef = useRef(ready)
   readyRef.current = ready
 
   useEffect(() => {
-    void watchStatus().catch((error) => showError('Couldn’t Start pvorg', error))
+    void watchStatus().catch((error) => showError('Couldn’t Start PP Video Organizer', error))
     void loadAppearance().catch(() => undefined)
+    void loadSidebar()
   }, [])
 
   useEffect(() => installKeyboard(navigate, () => readyRef.current), [navigate])
@@ -134,6 +139,9 @@ export default function App() {
         case 'settingsChanged':
           void loadAppearance()
           bumpData()
+          return
+        case 'toggleSidebar':
+          if (readyRef.current) toggleSidebar()
           return
         case 'chooseLibrary':
           void api
@@ -175,7 +183,7 @@ export default function App() {
 
   let content
   if (current?.phase === 'error') content = <StartupError status={current} />
-  else if (!ready) content = <StartupProgress status={current} />
+  else if (!ready || !sidebarLoaded) content = <StartupProgress status={current} />
   else
     content = (
       <Shell>

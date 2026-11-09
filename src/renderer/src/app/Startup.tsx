@@ -31,7 +31,7 @@ export function StartupError({ status }: { status: Status }) {
       <h1 className="startup__title">Couldn’t Load Your Library</h1>
       <p className="startup__message">{status.error}</p>
       <p className="startup__hint">
-        pvorg reads its configuration from <code>{status.configPath}</code>.
+        PP Video Organizer reads its configuration from <code>{status.configPath}</code>.
       </p>
       <div className="startup__actions">
         <Button variant="primary" icon="refresh" autoFocus onClick={() => void reloadLibrary()}>

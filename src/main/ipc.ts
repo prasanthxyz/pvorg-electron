@@ -27,6 +27,8 @@ export interface IpcContext {
   settings: SettingsStore
   isTrustedSender: (event: IpcMainInvokeEvent) => boolean
   applyAppearance: (choice: Appearance) => void
+  /** A preference the menu shows changed. */
+  onPreferences: () => void
   onMenuState: (state: MenuState) => void
   /** Files the user picked for import in this session; only these may be imported. */
   importFiles: Set<string>
@@ -120,6 +122,7 @@ function settingsPayload(ctx: IpcContext): Settings {
     videosPath: config?.videosPath ?? null,
     galleriesPath: config?.galleriesPath ?? null,
     appearance: ctx.settings.get().appearance,
+    sidebarHidden: ctx.settings.get().sidebarHidden,
     tools: { ...ctx.library.tools }
   }
 }
@@ -158,6 +161,12 @@ export function registerIpc(ctx: IpcContext): void {
       ctx.applyAppearance(choice)
       return settingsPayload(ctx)
     },
+    setSidebarHidden: async (_, hidden) => {
+      if (typeof hidden !== 'boolean') throw new ValidationError('Invalid sidebar state')
+      await ctx.settings.update({ sidebarHidden: hidden })
+      ctx.onPreferences()
+      return { hidden }
+    },
     chooseLibraryFile: async (event) => {
       const current = ctx.settings.configPath().file
       const options: Electron.OpenDialogOptions = {
@@ -165,7 +174,7 @@ export function registerIpc(ctx: IpcContext): void {
         buttonLabel: 'Choose',
         defaultPath: existsSync(current) ? current : os.homedir(),
         properties: ['openFile'],
-        filters: [{ name: 'pvorg library', extensions: ['json'] }]
+        filters: [{ name: 'PP Video Organizer library', extensions: ['json'] }]
       }
       const win = windowOf(event)
       const result = win

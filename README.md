@@ -1,7 +1,7 @@
 # PP-Video-Organizer
 
-The desktop app of pvorg (Personal Video + Gallery Organizer) for macOS, Windows
-and Linux, built with Electron, React and TypeScript.
+The desktop app of PP Video Organizer (pvorg for short) for macOS, Windows and
+Linux, built with Electron, React and TypeScript.
 
 **What the app does and how it should look and behave is defined in
 [docs/SPEC.md](docs/SPEC.md)**, the product spec shared with pvorg-native,
@@ -16,7 +16,7 @@ tooling only.
   them the library still loads, and the app says which tool is missing.
 - A library file, `pvorg.json` (see the spec, §1). The app looks for
   `~/pvorg.json`, or the file named by `PVORG_CONFIG`; **Settings › Choose
-  Library File…** picks another one and remembers it. pvorg never creates the
+  Library File…** picks another one and remembers it. The app never creates the
   file. A library from the app's earlier versions (`~/pvorg.yml`) can be merged
   in with **File › Import from pvorg.yml…**.
 
@@ -52,11 +52,11 @@ channel to update from.
 
 ## Visual QA
 
-| Tool                                                        | Purpose                                                                                                                                                                                                                                                                                                                |
-| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run fixture`                                           | Builds a synthetic library with ffmpeg in `/tmp/pvorg-desktop-fixture` (`scripts/make-fixture.sh <dir>` for another folder): 21 valid videos, an .mkv, an .avi and a damaged file, two badly named files, eight galleries plus an empty one, stale entries and an old `pvorg.yml`.                                     |
-| `npm run tour`                                              | After `npm run build`: launches the real app with Playwright against a copy of the fixture, screenshots every page and state in Dark and Light at 1440×900 and 960×600 into `/tmp/pvorg-desktop-tour`, runs the keyboard, Exclude Pairing, delete, mapping, tag, import and security checks, and writes `results.txt`. |
-| `PVORG_TOUR_MODE=smoke PVORG_APP=<executable> npm run tour` | The same checks against a packaged build.                                                                                                                                                                                                                                                                              |
+| Tool                                                        | Purpose                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run fixture`                                           | Builds a synthetic library with ffmpeg in `/tmp/pvorg-desktop-fixture` (`scripts/make-fixture.sh <dir>` for another folder): 21 valid videos, an .mkv, an .avi and a damaged file, two badly named files, eight galleries plus an empty one, stale entries and an old `pvorg.yml`.                                                                                                                                               |
+| `npm run tour`                                              | After `npm run build`: launches the real app with Playwright against a copy of the fixture, screenshots every page and state in Dark and Light at 1440×900 and 960×600 (key pages with the sidebar hidden too) into `/tmp/pvorg-desktop-tour`, runs the keyboard, sidebar, app name, Exclude Pairing, delete, mapping, tag, import and security checks, relaunches to check the sidebar is remembered, and writes `results.txt`. |
+| `PVORG_TOUR_MODE=smoke PVORG_APP=<executable> npm run tour` | The same checks against a packaged build.                                                                                                                                                                                                                                                                                                                                                                                        |
 
 Environment variables for QA runs:
 
@@ -67,6 +67,12 @@ Environment variables for QA runs:
 | `PVORG_TOOLS_PATH`                           | Search only these folders for ffmpeg and ffprobe                  |
 | `PVORG_HIDE_WINDOW=1`                        | Don't show the window (screenshots still work)                    |
 | `PVORG_TOUR_APPEARANCES`, `PVORG_TOUR_SIZES` | Narrow a tour, e.g. `dark` and `1440x900`                         |
+
+The app keeps its own settings (the chosen library file, appearance, whether the
+sidebar is hidden) and its thumbnail cache in a `pvorg` folder under the OS's
+app-data folder: `~/Library/Application Support/pvorg`, `%APPDATA%\pvorg` or
+`~/.config/pvorg`. The folder doesn't follow the app's display name, so renaming
+the app never moves them.
 
 ## Project layout
 

@@ -6,8 +6,10 @@
  *
  * It copies the fixture library (scripts/make-fixture.sh) to a scratch folder, launches the
  * app sandboxed with its own user-data folder, screenshots every page and state in Dark and
- * Light at 1440×900 and 960×600, runs the keyboard, Exclude Pairing, delete, mapping, tag,
- * import and security checks, and writes results.txt. It exits non-zero on any failure.
+ * Light at 1440×900 and 960×600 (with the sidebar shown and hidden), runs the keyboard,
+ * sidebar, app name, Exclude Pairing, delete, mapping, tag, import and security checks,
+ * relaunches to check the sidebar is remembered, and writes results.txt. It exits non-zero on
+ * any failure.
  */
 
 import { _electron as electron, type ElectronApplication, type Page } from '@playwright/test'
@@ -365,6 +367,20 @@ async function showCombination(
   return found
 }
 
+/** Hides or shows the sidebar with View › Hide / Show Sidebar and waits for it to settle. */
+async function toggleSidebar(session: Session, hidden: boolean): Promise<void> {
+  const state = hidden ? 'hidden' : 'shown'
+  if ((await sidebarState(session.page)) !== state) await menu(session, 'toggleSidebar')
+  await session.page.waitForFunction(
+    (s) => document.querySelector<HTMLElement>('.shell')?.dataset.sidebar === s,
+    state
+  )
+  await session.page.waitForTimeout(400)
+}
+
+const sidebarState = (page: Page) =>
+  page.evaluate(() => document.querySelector<HTMLElement>('.shell')?.dataset.sidebar)
+
 const toastText = (page: Page) => page.locator('.toast__message').innerText({ timeout: 5000 })
 
 // ---------------------------------------------------------------- screenshots
@@ -376,6 +392,9 @@ async function tourMain(session: Session): Promise<void> {
   await go(page, '#/')
   await showCombination(page, { filename: /harbor_lights/ })
   await shot(page, 'viewer-contact-sheet')
+  await toggleSidebar(session, true)
+  await shot(page, 'viewer-sidebar-hidden')
+  await toggleSidebar(session, false)
 
   await page.locator('.stage').click({ button: 'right', position: { x: 300, y: 300 } })
   await page.waitForSelector('.menu')
@@ -402,6 +421,9 @@ async function tourMain(session: Session): Promise<void> {
   }
   await shot(page, 'viewer-video')
   await page.mouse.move(10, 10)
+  await toggleSidebar(session, true)
+  await shot(page, 'viewer-video-sidebar-hidden')
+  await toggleSidebar(session, false)
   await page.keyboard.press('ArrowUp')
   await page.keyboard.press('ArrowUp')
   await page.keyboard.press('p')
@@ -462,6 +484,9 @@ async function tourMain(session: Session): Promise<void> {
   // Library
   await go(page, '#/library')
   await shot(page, 'library')
+  await toggleSidebar(session, true)
+  await shot(page, 'library-sidebar-hidden')
+  await toggleSidebar(session, false)
   const card = page.locator('.card__media').nth(1)
   await card.hover()
   await page.waitForSelector('.hover-preview', { timeout: 3000 }).catch(() => undefined)
@@ -516,6 +541,9 @@ async function tourMain(session: Session): Promise<void> {
   for (const i of [0, 1, 9, 10, 10]) await cells.nth(i).click()
   await page.mouse.move(5, 5)
   await shot(page, 'mapping-galleries-pending')
+  await toggleSidebar(session, true)
+  await shot(page, 'mapping-galleries-pending-sidebar-hidden')
+  await toggleSidebar(session, false)
   await page.locator('.matrix__column-button').nth(1).click()
   await page.waitForSelector('.menu')
   await shot(page, 'mapping-galleries-column-menu')
@@ -1081,12 +1109,233 @@ async function checks(session: Session): Promise<void> {
     return `${label} → ${toast}`
   })
 
+  // App name (SPEC §4.2)
+  await check('name: window, page titles and menus say PP Video Organizer', async () => {
+    const NAME = 'PP Video Organizer'
+    const titles: string[] = []
+    const pages: [string, string | null][] = [
+      ['#/filters', `Filters – ${NAME}`],
+      ['#/library', `Library – ${NAME}`],
+      ['#/mapping/galleries', `Gallery Mapping – ${NAME}`],
+      ['#/mapping/tags', `Tag Mapping – ${NAME}`],
+      ['#/settings', `Settings – ${NAME}`],
+      ['#/', null]
+    ]
+    for (const [hash, expected] of pages) {
+      await go(page, hash)
+      const title = await page.title()
+      const windowTitle = await app.evaluate(({ BrowserWindow }) =>
+        BrowserWindow.getAllWindows()[0].getTitle()
+      )
+      const wanted =
+        expected ?? `${await page.locator('.page-header__title').innerText()} – ${NAME}`
+      assert(title === wanted, `${hash}: document title “${title}”`)
+      assert(windowTitle === title, `${hash}: window title “${windowTitle}”`)
+      titles.push(title)
+    }
+    const brand = await page.locator('.sidebar .nav__brand').innerText()
+    assert(brand === NAME, `sidebar brand “${brand}”`)
+    const menus = await app.evaluate(({ app: electronApp, Menu }) => {
+      const items = Menu.getApplicationMenu()?.items ?? []
+      return {
+        name: electronApp.getName(),
+        exe: electronApp.getPath('exe'),
+        first: items[0]?.label,
+        appItems: items[0]?.submenu?.items.map((i) => i.label).filter(Boolean) ?? [],
+        help: items.at(-1)?.submenu?.items.map((i) => i.label) ?? []
+      }
+    })
+    assert(menus.name === NAME, `app.name “${menus.name}”`)
+    assert(menus.help.includes(`${NAME} on GitHub`), `Help: ${menus.help.join(', ')}`)
+    if (process.platform === 'darwin') {
+      assert(menus.first === NAME, `app menu “${menus.first}”`)
+      for (const item of [`About ${NAME}`, `Hide ${NAME}`, `Quit ${NAME}`])
+        assert(menus.appItems.includes(item), `app menu lacks “${item}”`)
+    }
+    if (APP && process.platform === 'darwin')
+      assert(menus.exe.includes(`/${NAME}.app/`), `packaged app at ${menus.exe}`)
+    return `${titles.join(' | ')}; menu: ${menus.appItems.filter((l) => l.includes(NAME)).join(', ') || menus.first}`
+  })
+
+  // Hiding the sidebar (SPEC §4.1)
+  const flips = async () =>
+    page.evaluate(() => (window as unknown as { __flips?: number }).__flips ?? 0)
+  await page.evaluate(() => {
+    const w = window as unknown as { __flips: number }
+    w.__flips = 0
+    new MutationObserver(() => w.__flips++).observe(document.querySelector('.shell')!, {
+      attributeFilter: ['data-sidebar']
+    })
+  })
+  const toggleItem = () =>
+    app.evaluate(({ Menu }) => {
+      const item = Menu.getApplicationMenu()?.getMenuItemById('toggleSidebar')
+      return {
+        label: item?.label,
+        accelerator: item?.accelerator,
+        registered: item?.registerAccelerator,
+        enabled: item?.enabled
+      }
+    })
+  const toggleButton = () =>
+    page.evaluate(() => {
+      const b = document.querySelector<HTMLButtonElement>('.page-header .sidebar-toggle')
+      return {
+        label: b?.getAttribute('aria-label'),
+        title: b?.title,
+        expanded: b?.getAttribute('aria-expanded'),
+        controls: b?.getAttribute('aria-controls'),
+        visible: !!b && b.offsetWidth > 0
+      }
+    })
+
+  await check('sidebar: View menu hides and shows it, one toggle per command', async () => {
+    await go(page, '#/')
+    await toggleSidebar(session, false)
+    const shown = await toggleButton()
+    assert(shown.label === 'Hide Sidebar' && shown.expanded === 'true', JSON.stringify(shown))
+    assert(shown.controls === 'sidebar' && !!(await page.$('#sidebar')), 'aria-controls')
+    const before = await flips()
+    await menu(session, 'toggleSidebar')
+    await page.waitForTimeout(400)
+    assert((await flips()) === before + 1, `menu toggled ${(await flips()) - before} times`)
+    assert((await sidebarState(page)) === 'hidden', 'not hidden')
+    const hidden = await toggleButton()
+    assert(hidden.label === 'Show Sidebar' && hidden.expanded === 'false', JSON.stringify(hidden))
+    const item = await toggleItem()
+    assert(item.label === 'Show Sidebar', `menu says “${item.label}”`)
+    const layout = await page.evaluate(() => ({
+      main: document.querySelector('.main')!.getBoundingClientRect().width,
+      width: innerWidth,
+      inert: document.querySelector<HTMLElement>('.sidebar')!.inert,
+      stage: document.querySelector('.stage')?.getBoundingClientRect().width ?? 0
+    }))
+    assert(layout.main === layout.width, `content ${layout.main} of ${layout.width} px`)
+    assert(layout.inert, 'hidden sidebar still focusable')
+    const saved = readJson(path.join(USER_DATA, 'settings.json'))
+    assert(saved.sidebarHidden === true, `settings.json: ${JSON.stringify(saved)}`)
+    await page.locator('.page-header .sidebar-toggle').click()
+    await page.waitForTimeout(400)
+    assert((await flips()) === before + 2, 'the button didn’t toggle once')
+    assert((await toggleItem()).label === 'Hide Sidebar', 'menu label didn’t follow the button')
+    const stage = await page.evaluate(
+      () => document.querySelector('.stage')?.getBoundingClientRect().width ?? 0
+    )
+    assert(layout.stage > stage, `stage ${stage} → ${layout.stage} px when hidden`)
+    return `menu → hidden (stage ${Math.round(stage)} → ${Math.round(layout.stage)} px, saved), button → shown`
+  })
+
+  await check('sidebar: the shortcut is only the menu’s accelerator', async () => {
+    const item = await toggleItem()
+    const expected = process.platform === 'darwin' ? 'Ctrl+Cmd+S' : 'Ctrl+\\'
+    assert(item.accelerator === expected, `accelerator ${item.accelerator}`)
+    assert(item.registered !== false, 'accelerator not registered with the system')
+    assert(item.enabled, 'menu item disabled')
+    const before = await flips()
+    // The page itself never acts on the key, so the system's menu accelerator fires alone.
+    await page.keyboard.press(
+      process.platform === 'darwin' ? 'Control+Meta+s' : 'Control+Backslash'
+    )
+    await page.waitForTimeout(300)
+    assert((await flips()) === before, 'the page handled the shortcut too')
+    const button = await toggleButton()
+    const key = process.platform === 'darwin' ? '⌃⌘S' : 'Ctrl+\\'
+    assert(button.title === `Hide Sidebar (${key})`, `tooltip “${button.title}”`)
+    return `${item.accelerator}, registered; the page leaves it alone; tooltip “${button.title}”`
+  })
+
+  await check('sidebar: hiding moves focus from the sidebar to the toggle', async () => {
+    await page.locator('.sidebar .nav__link[href="#/library"]').focus()
+    await menu(session, 'toggleSidebar')
+    await page.waitForTimeout(400)
+    const focused = await page.evaluate(() => document.activeElement?.id)
+    assert(focused === 'sidebar-toggle', `focus on #${focused}`)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(400)
+    assert((await sidebarState(page)) === 'shown', 'Enter on the toggle didn’t show it')
+    return 'Library link → toggle; Enter shows it again'
+  })
+
+  await check('sidebar: a dot stands in for unsaved mapping badges', async () => {
+    await go(page, '#/mapping/galleries')
+    await page.locator('.segmented__option:has-text("All")').click()
+    await page.locator('.matrix__cell-button').first().click()
+    await page.mouse.move(5, 5)
+    await toggleSidebar(session, true)
+    const hidden = await toggleButton()
+    const dot = await page.locator('.sidebar-toggle--pending').count()
+    assert(dot === 1, 'no dot')
+    assert(hidden.label === 'Show Sidebar, 1 unsaved mapping change', `label “${hidden.label}”`)
+    await toggleSidebar(session, false)
+    assert((await page.locator('.sidebar-toggle--pending').count()) === 0, 'dot while shown')
+    await page.locator('.page-header button:has-text("Revert")').click()
+    await page.locator('dialog[open] button:has-text("Discard Changes")').click()
+    await page.locator('.segmented__option:has-text("Undecided")').click()
+    return `“${hidden.label}”`
+  })
+
+  await check('sidebar: narrow windows keep the drawer', async () => {
+    await go(page, '#/')
+    await toggleSidebar(session, true)
+    await app.evaluate(({ BrowserWindow }) =>
+      BrowserWindow.getAllWindows()[0].webContents.setZoomFactor(1.75)
+    )
+    await page.waitForFunction(() => innerWidth < 900)
+    await page.waitForTimeout(300)
+    const narrow = await page.evaluate(() => ({
+      topbar: !!document.querySelector<HTMLElement>('.topbar')?.offsetHeight,
+      inert: document.querySelector<HTMLElement>('.sidebar')!.inert
+    }))
+    const button = await toggleButton()
+    const item = await toggleItem()
+    await page.locator('.topbar button[aria-label="Open navigation"]').click()
+    await page.waitForSelector('dialog.drawer[open] .nav__link')
+    await escape(page)
+    await app.evaluate(({ BrowserWindow }) =>
+      BrowserWindow.getAllWindows()[0].webContents.setZoomFactor(1)
+    )
+    await page.waitForFunction(() => innerWidth >= 900)
+    await page.waitForTimeout(300)
+    assert(narrow.topbar && !button.visible, 'toggle shown beside the drawer button')
+    assert(!item.enabled, 'menu item enabled in drawer mode')
+    assert((await sidebarState(page)) === 'hidden', 'drawer mode changed the setting')
+    await toggleSidebar(session, false)
+    return 'drawer opens; toggle and menu item off; the setting is untouched'
+  })
+
   await check('no console errors', async () => {
     assert(
       consoleErrors.length === 0,
       `${consoleErrors.length}: ${consoleErrors.slice(0, 3).join(' | ')}`
     )
   })
+}
+
+/** The sidebar choice survives a relaunch (SPEC §4.1); run after the session has closed. */
+async function checkRelaunch(): Promise<void> {
+  const first = await launch()
+  try {
+    await ready(first.page)
+    await toggleSidebar(first, true)
+  } finally {
+    await first.app.close()
+  }
+  const second = await launch()
+  try {
+    await ready(second.page)
+    await check('sidebar: hidden stays hidden after a relaunch', async () => {
+      const state = await sidebarState(second.page)
+      const label = await second.app.evaluate(
+        ({ Menu }) => Menu.getApplicationMenu()?.getMenuItemById('toggleSidebar')?.label
+      )
+      assert(state === 'hidden', `relaunched with the sidebar ${state}`)
+      assert(label === 'Show Sidebar', `menu says “${label}”`)
+      await toggleSidebar(second, false)
+      return `relaunched hidden, menu “${label}”; shown again`
+    })
+  } finally {
+    await second.app.close()
+  }
 }
 
 // ---------------------------------------------------------------- run
@@ -1108,6 +1357,7 @@ async function main(): Promise<void> {
     } finally {
       await session.app.close()
     }
+    await checkRelaunch()
   } else {
     const session = await launch()
     try {
@@ -1126,6 +1376,7 @@ async function main(): Promise<void> {
     } finally {
       await session.app.close()
     }
+    await checkRelaunch()
     await tourMissingTools()
   }
   const failed = results.filter((r) => !r.ok)
