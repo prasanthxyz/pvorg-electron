@@ -1,5 +1,5 @@
 /**
- * The same pvorg.json edits must produce the same content as pvorg-native and pvorg-web
+ * The same pvorg.json edits must produce the same content as pvorg-macos and pvorg-web
  * (SPEC §1.2). `fixtures/compat` holds the input and expected outputs of the shared
  * six-step sequence: startup normalization, a gallery mapping save, a tag mapping save,
  * Exclude Pairing for a video without an entry, deleting a video and stale-entry cleanup.

@@ -1,13 +1,13 @@
 # PP Video Organizer — Product Specification
 
 > **One spec, four apps.** This file is shared, unchanged, by
-> **pvorg-native** (macOS), **pvorg-web**, **pvorg-android** and
+> **pvorg-macos** (macOS), **pvorg-web**, **pvorg-android** and
 > **pvorg-electron** (Electron desktop for macOS, Windows and Linux), at
 > `docs/SPEC.md` in each repository. When behavior or design changes, edit it
 > in one repository and copy it to the other three in the same change. The
 > version line below identifies the copy.
 >
-> **Version 1.6 · 2026-11-09**
+> **Version 1.7 · 2026-11-09**
 
 **PP Video Organizer** (*pvorg* for short, the name of its library files and
 identifiers, §4.2) is a single-user tool for browsing
@@ -817,7 +817,7 @@ decision changes.
 
 # Part IV — Platforms
 
-## 13. macOS — pvorg-native
+## 13. macOS — pvorg-macos
 
 - **Stack.** Swift 6, SwiftUI with AppKit where needed, AVKit and
   AVFoundation, SwiftPM. macOS 14+.

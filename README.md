@@ -4,7 +4,7 @@ The desktop app of PP Video Organizer (pvorg for short) for macOS, Windows and
 Linux, built with Electron, React and TypeScript.
 
 **What the app does and how it should look and behave is defined in
-[docs/SPEC.md](docs/SPEC.md)**, the product spec shared with pvorg-native,
+[docs/SPEC.md](docs/SPEC.md)**, the product spec shared with pvorg-macos,
 pvorg-web and pvorg-android. This README covers building, running and developer
 tooling only.
 
