@@ -2,12 +2,12 @@
 
 > **One spec, four apps.** This file is shared, unchanged, by
 > **pvorg-native** (macOS), **pvorg-web**, **pvorg-android** and
-> **PP-Video-Organizer** (Electron desktop for macOS, Windows and Linux), at
+> **pvorg-electron** (Electron desktop for macOS, Windows and Linux), at
 > `docs/SPEC.md` in each repository. When behavior or design changes, edit it
 > in one repository and copy it to the other three in the same change. The
 > version line below identifies the copy.
 >
-> **Version 1.3 · 2026-11-09**
+> **Version 1.4 · 2026-11-09**
 
 **PP Video Organizer** (*pvorg* for short, the name of its library files and
 identifiers, §4.2) is a single-user tool for browsing
@@ -929,7 +929,7 @@ Hardware-keyboard shortcuts follow §7.1.
     folder picker, so an emulator tour can screenshot every page and state in
     both appearances.
 
-## 16. Desktop — PP-Video-Organizer (Electron)
+## 16. Desktop — pvorg-electron
 
 - **Stack.** Electron (current stable), electron-vite, React + TypeScript.
   The main process owns the library: it implements Part I in TypeScript,
@@ -973,9 +973,9 @@ Status of each app against this spec at the version above. ✓ conforms,
 
 | Area | macOS | Desktop | Web | Android |
 |---|---|---|---|---|
-| §1–3 data rules (tags opt-in, mapping saves, Exclude Pairing + undo, deletion, stale cleanup) | ◐ v1.1 changes (undo feedback, failed-delete rule) written but not yet built: Xcode unavailable | ✓ | ✓ | ✓ |
+| §1–3 data rules (tags opt-in, mapping saves, Exclude Pairing + undo, deletion, stale cleanup) | ✓ | ✓ | ✓ | ✓ |
 | §4 navigation and page names | ✓ | ✓ | ✓ | ✓ |
-| §4.1–4.2 hiding the sidebar, app name (v1.3) | ◐ written but not yet built: Xcode unavailable | ✓ | ✓ | ✓ |
+| §4.1–4.2 hiding the sidebar, app name | ✓ | ✓ | ✓ | ✓ |
 | §5 viewer, all states | ✓ | ✓ | ✓ | ✓ |
 | §6.1–6.7 Filters, Library, Mapping, Cleanup, Settings | ✓ | ✓ | ✓ | ✓ |
 | §7 commands and keyboard rules | ✓ | ◐ plain keys are tested through the page, not the OS menu, so no test proves a menu item never fires twice for one key press | ✓ | ✓ |

@@ -1,4 +1,4 @@
-# PP-Video-Organizer
+# pvorg-electron
 
 The desktop app of PP Video Organizer (pvorg for short) for macOS, Windows and
 Linux, built with Electron, React and TypeScript.
