@@ -1,4 +1,4 @@
-# pvorg — Product Specification
+# PP Video Organizer — Product Specification
 
 > **One spec, four apps.** This file is shared, unchanged, by
 > **pvorg-native** (macOS), **pvorg-web**, **pvorg-android** and
@@ -7,9 +7,10 @@
 > in one repository and copy it to the other three in the same change. The
 > version line below identifies the copy.
 >
-> **Version 1.2 · 2026-11-09**
+> **Version 1.3 · 2026-11-09**
 
-pvorg (Personal Video + Gallery Organizer) is a single-user tool for browsing
+**PP Video Organizer** (*pvorg* for short, the name of its library files and
+identifiers, §4.2) is a single-user tool for browsing
 a personal library of videos paired with image galleries. It shows one
 **combination** (a video plus a gallery) at a time: the video's contact sheet
 or the video itself, beside a slideshow of the gallery. Around that viewer are
@@ -346,8 +347,9 @@ Every app has the same pages, with the same names, in two groups:
 | Organize | **Tag Mapping** | Decide which tags each video has. |
 | — | **Settings** | Appearance and library location. |
 
-- Primary navigation is always visible on large screens and lists the pages
-  with icons and labels, grouped as above.
+- Primary navigation is shown on large screens and lists the pages with
+  icons and labels, grouped as above. It can be hidden to give the page the
+  whole window (§4.1).
 - Gallery Mapping and Tag Mapping show a **badge** with their count of unsaved
   changes.
 - A **library summary** ("22 videos · 9 galleries") sits at the foot of the
@@ -360,7 +362,50 @@ Every app has the same pages, with the same names, in two groups:
 Navigation icons, as SF Symbols names (use the platform's equivalent glyph):
 Viewer `play.rectangle`, Filters `line.3.horizontal.decrease.circle`,
 Library `square.grid.2x2`, Gallery Mapping `photo.on.rectangle.angled`,
-Tag Mapping `tag`.
+Tag Mapping `tag`, sidebar toggle `sidebar.left`.
+
+### 4.1 Hiding the sidebar
+
+On large screens the navigation (sidebar, drawer or rail) can be hidden, so
+the page, above all the viewer, uses the whole window.
+
+- **Toggle.** A sidebar button at the leading edge of the page header hides
+  and shows it, labeled **Hide Sidebar** or **Show Sidebar** (in the macOS
+  app, the system toolbar button). Apps with a menu bar also have **View › Hide
+  Sidebar / Show Sidebar**, and every app has the §7.1 shortcut. A page
+  without a header (such as the web app's Not Found page) offers at least a
+  way back to the Viewer. Contextual bars, such as Android's selection mode,
+  keep their Close button in the leading slot; the shortcut still applies.
+- **Remembered.** The choice persists across page changes and launches.
+  Shown is the first-run default.
+- **Nothing is lost.** While hidden, pages stay reachable by showing the
+  sidebar again, through the menu bar where the app has one, and with the V
+  and C shortcuts. If a mapping page has unsaved changes, the Show Sidebar
+  button carries a dot where the platform allows it, standing in for the
+  hidden badge, and its accessible label adds "unsaved mapping changes".
+- **Layout.** Content reflows into the freed width; the viewer's stage and
+  slideshow grow. The change animates (§8.5).
+- **Focus.** Hiding the sidebar while focus is inside it moves focus to the
+  toggle button.
+- **Small screens.** Where navigation is already a temporary drawer or menu
+  (the web app below about 900 px, and the desktop app when zoom leaves less
+  than that), that menu keeps working as before and the setting doesn't
+  apply.
+- **Android.** Hiding applies to the drawer and the rail alike; showing
+  restores whichever form was last used.
+
+### 4.2 Name
+
+The app is called **PP Video Organizer** wherever the user sees its name:
+window and page titles, the app menu, the Dock, launcher or Start menu,
+installers, the navigation header, dialogs and messages. Web and Desktop
+page titles read "Page – PP Video Organizer"; the viewer's uses the current
+video's title instead of the page name.
+
+`pvorg` stays the technical name: the library files (`pvorg.json`,
+`pvorg.yml`), repositories, bundle and package identifiers, executables,
+internal channels and `PVORG_*` environment variables. Existing libraries,
+settings and installs keep working.
 
 ## 5. Viewer
 
@@ -532,7 +577,7 @@ layout never jumps.
 ### 6.7 Startup error
 
 Title: "Couldn't Load Your Library". Then the error and, for invalid JSON, the
-offending key or path. Where pvorg looks for its configuration. **Try Again**
+offending key or path. Where the app looks for its configuration. **Try Again**
 (the default action), and a reveal action when the file exists.
 
 ### 6.8 Optional capabilities
@@ -558,6 +603,7 @@ Capabilities an app may offer. Each follows these rules wherever it exists;
 | Command | Where | Keyboard (macOS, Desktop, Web) | Android |
 |---|---|---|---|
 | Go to Viewer / Filters | navigation, menu | V / C | navigation; same keys with a hardware keyboard |
+| Hide / Show Sidebar (§4.1) | anywhere the navigation is persistent | ⌃⌘S (`Ctrl+\` on non-Mac) | header button; `Ctrl+\` with a hardware keyboard |
 | Toggle contact sheet / video | Viewer | P | mode control, double-tap; P |
 | Previous / Next combination | Viewer | B / N | header buttons, horizontal swipe on the stage; B / N |
 | Exclude Pairing | Viewer | ⌫ (Backspace/Delete) | header button, stage menu; ⌫ |
@@ -577,7 +623,8 @@ Rules:
   follows the platform convention: it clears the field on macOS and the Web,
   and leaves the field while keeping its query on Android and Desktop.
   Clicking or tapping elsewhere also leaves it, after which the shortcuts work
-  again.
+  again. Shortcuts with ⌘ or Ctrl (Save, Hide / Show Sidebar) still
+  work while typing, as in the platform's own apps.
 - **Scoped keys.** Viewer keys act only while the viewer is showing, and
   playback keys only in video mode. Elsewhere, arrows and Space keep their
   usual behavior.
@@ -672,6 +719,7 @@ paths and filenames in the middle.
 | Toast in/out | about 0.35 s spring or ease; reduced motion uses opacity only |
 | Hover preview | 220 ms initial delay; switches instantly between neighbors for 400 ms after one hides |
 | Chip, selection, cell hover | 0.1–0.18 s |
+| Sidebar hide / show | about 0.2 s ease-out; reduced motion makes it instant |
 
 Reduced-motion settings remove the crossfade and all movement.
 
@@ -759,6 +807,8 @@ decision changes.
 | Quality score normalizes bitrate to 640 × 480 at 30 fps. | The old formula multiplied by resolution, counting it twice; resolution is now its own column. |
 | Web and Desktop use a fixed blue accent. | Browsers don't expose the system accent; Desktop shares the web design system. |
 | Extras are specified once as optional capabilities, with per-app availability. | One app's extra features shouldn't fork the product's behavior. |
+| The app is called PP Video Organizer in every app; `pvorg` stays the technical name. | One product name everywhere. Renaming files and identifiers would break existing libraries and installs. |
+| The sidebar can be hidden, and the choice is remembered. | The viewer and the mapping matrices benefit from the full width; a remembered choice suits a single-user tool. |
 | One shared spec for all apps. | One product, one source of truth; platform sections record the honest differences. |
 
 ---
@@ -779,6 +829,8 @@ decision changes.
   - Viewer: mode P, Previous B, Next N, Exclude ⌫, Play/Pause Space, Skip ←
     and →, Jump To 0–9.
   - Edit: Undo / Redo Exclude Pairing.
+  - View: the system Hide / Show Sidebar ⌃⌘S, with the toolbar's sidebar
+    button; the choice is remembered (§4.1).
   - Library toolbar: ⌘A, Esc, ⌘⌫.
 - **Platform specifics.** Reveal in Finder throughout; a hover preview
   floating panel; glass styling on macOS 26+.
@@ -802,7 +854,10 @@ decision changes.
 - **Structure.** One route per page (`/`, `/filters`, `/library`,
   `/mapping/galleries`, `/mapping/tags`, `/settings`), so pages are
   bookmarkable and the back button works.
-  - Wide screens: a persistent sidebar.
+  - Wide screens: a persistent sidebar that can be hidden (§4.1), remembered
+    in the browser's local storage. The More menu lives in the sidebar and
+    offers Hide Sidebar; while it's hidden, the header toggle and the shortcut
+    bring it back.
   - Narrow screens: a collapsible menu. Below about 900 px the viewer stacks
     the stage above the slideshow.
 - **Conventions.** Semantic HTML landmarks, real `<button>` and `<a>`
@@ -844,8 +899,9 @@ decision changes.
 
 ### 15.2 Structure
 
-- A Material 3 navigation rail (or navigation drawer), with the §4 pages,
-  groups and badges.
+- A Material 3 navigation drawer that collapses to a rail, with the §4
+  pages, groups and badges. Either form can be hidden from the top app bar's
+  leading button (§4.1).
 - A top app bar per page, holding the title, subtitle and actions.
 - Snackbars for confirmations and Undo; dialogs for confirmations and
   errors.
@@ -889,8 +945,12 @@ Hardware-keyboard shortcuts follow §7.1.
     server; external links open in the default browser.
 - **Structure.** A native application menu per OS, with File (Reload Library,
   Clean Up Stale Entries, Import from pvorg.yml), Edit, View, Go, Viewer,
-  Window and Help, carrying the §7.1 accelerators. A sidebar like the web
-  app's, and native window chrome.
+  Window and Help, carrying the §7.1 accelerators; View holds Hide / Show
+  Sidebar. A sidebar like the web app's, hideable and remembered (§4.1), and
+  native window chrome.
+- **Settings location.** Preferences and caches live in a `pvorg` folder in
+  the OS app-data folder whatever the display name, so renaming never moves
+  them.
 - **Platform actions.** Open in Default App and Reveal in Finder / Show in
   Explorer / Show in Folder use the OS shell.
 - **Playback.** Chromium codecs: mp4 (H.264) and webm play, mkv often plays,
@@ -915,6 +975,7 @@ Status of each app against this spec at the version above. ✓ conforms,
 |---|---|---|---|---|
 | §1–3 data rules (tags opt-in, mapping saves, Exclude Pairing + undo, deletion, stale cleanup) | ◐ v1.1 changes (undo feedback, failed-delete rule) written but not yet built: Xcode unavailable | ✓ | ✓ | ✓ |
 | §4 navigation and page names | ✓ | ✓ | ✓ | ✓ |
+| §4.1–4.2 hiding the sidebar, app name (v1.3) | ◐ written but not yet built: Xcode unavailable | ✓ | ✓ | ✓ |
 | §5 viewer, all states | ✓ | ✓ | ✓ | ✓ |
 | §6.1–6.7 Filters, Library, Mapping, Cleanup, Settings | ✓ | ✓ | ✓ | ✓ |
 | §7 commands and keyboard rules | ✓ | ◐ plain keys are tested through the page, not the OS menu, so no test proves a menu item never fires twice for one key press | ✓ | ✓ |
