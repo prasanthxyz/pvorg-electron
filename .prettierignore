@@ -5,3 +5,4 @@ test-results
 qa/screenshots
 package-lock.json
 LICENSE
+docs/SPEC.md
