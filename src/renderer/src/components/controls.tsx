@@ -120,9 +120,10 @@ export const SearchField = forwardRef<HTMLInputElement, SearchFieldProps>(functi
         autoComplete="off"
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Escape' && value) {
-            e.stopPropagation()
-            onChange('')
+          // Esc leaves the field and keeps the query (SPEC §7.1, Desktop); shortcuts work again.
+          if (e.key === 'Escape') {
+            e.preventDefault()
+            e.currentTarget.blur()
           }
         }}
       />

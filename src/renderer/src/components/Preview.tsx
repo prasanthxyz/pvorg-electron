@@ -73,12 +73,21 @@ export function PreviewHost() {
     }
     const width = Math.min(920, window.innerWidth * 0.6)
     const height = (width * 9) / 16 + (hover.caption ? 36 : 0)
-    let left = hover.x + 24
-    let top = hover.y - height - 18
-    if (left + width > window.innerWidth - 8) left = hover.x - width - 24
-    if (left < 8) left = 8
-    if (top < 8) top = hover.y + 24
-    if (top + height > window.innerHeight - 8) top = window.innerHeight - height - 8
+    const margin = 8
+    const gap = 24
+    // Beside the pointer when there's room, otherwise centred on it; then above or below it,
+    // so the panel never sits under the pointer when the window has space.
+    let left =
+      hover.x + gap + width <= window.innerWidth - margin
+        ? hover.x + gap
+        : hover.x - gap - width >= margin
+          ? hover.x - gap - width
+          : hover.x - width / 2
+    left = Math.max(margin, Math.min(left, window.innerWidth - width - margin))
+    const beside = left >= hover.x + gap || left + width <= hover.x - gap
+    let top = beside ? hover.y - height / 2 : hover.y + gap
+    if (!beside && top + height > window.innerHeight - margin) top = hover.y - gap - height
+    top = Math.max(margin, Math.min(top, window.innerHeight - height - margin))
     setPlaced({ left, top })
   }, [hover])
 

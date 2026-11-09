@@ -124,6 +124,7 @@ export class Library {
   private sheets = new Map<string, number>()
   private cache: MetadataCache | null = null
   private run: Promise<void> | null = null
+  private rerun = false
   private queue: Promise<unknown> = Promise.resolve()
   private regenerating = new Set<string>()
 
@@ -136,9 +137,22 @@ export class Library {
     if (this.run) return { started: false, done: this.run }
     const run = this.exclusive(() => this.pipeline()).finally(() => {
       this.run = null
+      if (this.rerun) {
+        this.rerun = false
+        this.load()
+      }
     })
     this.run = run
     return { started: true, done: run }
+  }
+
+  /**
+   * Loads again once any run in progress finishes: for a library switch, which must not be
+   * dropped the way a second Reload is.
+   */
+  reloadSoon(): void {
+    if (this.run) this.rerun = true
+    else this.load()
   }
 
   get ready(): boolean {

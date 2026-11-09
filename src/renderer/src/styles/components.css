@@ -870,3 +870,26 @@ code {
   border-color: var(--accent);
   box-shadow: var(--focus-ring);
 }
+
+/* Long dialogs scroll their body; the title stays at the top and the buttons stay reachable. */
+.dialog[open] {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dialog[open] > .dialog__body,
+.dialog[open] > form > .dialog__body {
+  min-height: 0;
+  overflow: auto;
+}
+
+.dialog[open] > form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.dialog__actions {
+  flex: none;
+}

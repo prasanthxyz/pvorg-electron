@@ -23,7 +23,12 @@ export async function openImport(): Promise<void> {
   }
 }
 
-function List({ title, items, empty }: { title: string; items: string[]; empty: string }) {
+interface Item {
+  text: string
+  note?: string
+}
+
+function List({ title, items, empty }: { title: string; items: Item[]; empty: string }) {
   return (
     <section className="import__section">
       <h3 className="import__list-title">
@@ -32,8 +37,9 @@ function List({ title, items, empty }: { title: string; items: string[]; empty: 
       {items.length ? (
         <ul className="import__list">
           {items.map((item) => (
-            <li key={item}>
-              <MiddleTruncate text={item} />
+            <li key={item.text}>
+              <MiddleTruncate text={item.text} />
+              {item.note && <span className="import__reason">{item.note}</span>}
             </li>
           ))}
         </ul>
@@ -43,6 +49,8 @@ function List({ title, items, empty }: { title: string; items: string[]; empty: 
     </section>
   )
 }
+
+const plain = (values: string[]): Item[] => values.map((text) => ({ text }))
 
 export function ImportDialog() {
   const preview = useStore(importStore)
@@ -145,21 +153,25 @@ export function ImportDialog() {
             <div className="import__lists">
               <List
                 title="Videos Matched"
-                items={preview.matchedVideos.map((v) => v.filename)}
+                items={plain(preview.matchedVideos.map((v) => v.filename))}
                 empty="No videos in this file are in your library."
               />
               <List
                 title="Not Found"
-                items={preview.unmatchedVideos.map((v) => `${v.path} — ${v.reason}`)}
+                items={preview.unmatchedVideos.map((v) => ({ text: v.path, note: v.reason }))}
                 empty="Every video was found."
               />
               <List
                 title="Galleries Matched"
-                items={preview.matchedGalleries}
+                items={plain(preview.matchedGalleries)}
                 empty="No galleries match by folder name."
               />
               {preview.unmatchedGalleries.length > 0 && (
-                <List title="Galleries Not Found" items={preview.unmatchedGalleries} empty="" />
+                <List
+                  title="Galleries Not Found"
+                  items={plain(preview.unmatchedGalleries)}
+                  empty=""
+                />
               )}
             </div>
           </div>

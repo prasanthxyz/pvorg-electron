@@ -3,11 +3,12 @@ import { useStore } from '../state/store'
 import { Callout } from './feedback'
 
 function installHint(platform: string | undefined): string {
+  // ffprobe ships with ffmpeg everywhere.
   if (platform === 'darwin')
-    return 'Install it with Homebrew (brew install ffmpeg), then reload the library.'
+    return 'Install ffmpeg with Homebrew (brew install ffmpeg), then reload the library.'
   if (platform === 'win32')
-    return 'Install it with winget (winget install ffmpeg), then restart pvorg.'
-  return 'Install it with your package manager (for example, sudo apt install ffmpeg), then reload the library.'
+    return 'Install ffmpeg with winget (winget install ffmpeg), then restart pvorg.'
+  return 'Install ffmpeg with your package manager (for example, sudo apt install ffmpeg), then reload the library.'
 }
 
 /** Names the missing preview tools and how to install them (optional capability, SPEC §6.8). */

@@ -68,6 +68,36 @@ function readJson(file: string): Record<string, unknown> {
   return JSON.parse(readFileSync(file, 'utf8'))
 }
 
+/** JSON with sorted keys: pvorg.json content, ignoring formatting and key order (SPEC §1.2). */
+function canonical(value: unknown): string {
+  return JSON.stringify(value, (_, v) =>
+    v && typeof v === 'object' && !Array.isArray(v)
+      ? Object.fromEntries(
+          Object.keys(v)
+            .sort()
+            .map((k) => [k, v[k]])
+        )
+      : v
+  )
+}
+
+/** The first path where two JSON values differ, for failure messages. */
+function difference(a: unknown, b: unknown, at = ''): string {
+  if (canonical(a) === canonical(b)) return ''
+  if (a && b && typeof a === 'object' && typeof b === 'object' && !Array.isArray(a)) {
+    const keys = new Set([...Object.keys(a), ...Object.keys(b as object)])
+    for (const key of keys) {
+      const found = difference(
+        (a as Record<string, unknown>)[key],
+        (b as Record<string, unknown>)[key],
+        `${at}.${key}`
+      )
+      if (found) return found
+    }
+  }
+  return `${at || '/'}: ${JSON.stringify(a)} → ${JSON.stringify(b)}`
+}
+
 function writeLibrary(dir: string, config: Record<string, unknown>): string {
   mkdirSync(path.join(dir, 'videos'), { recursive: true })
   mkdirSync(path.join(dir, 'galleries'), { recursive: true })
@@ -903,8 +933,8 @@ async function checks(session: Session): Promise<void> {
       document.querySelector('.toast__message')?.textContent?.startsWith('Restored')
     )
     assert(
-      JSON.stringify(readJson(CONFIG)) === JSON.stringify(original),
-      'undo didn’t restore pvorg.json'
+      canonical(readJson(CONFIG)) === canonical(original),
+      `undo didn’t restore pvorg.json: ${difference(original, readJson(CONFIG))}`
     )
     const restored = await viewerPosition(page)
     assert(
@@ -918,16 +948,13 @@ async function checks(session: Session): Promise<void> {
     await page.waitForFunction(() =>
       document.querySelector('.toast__message')?.textContent?.startsWith('Excluded')
     )
-    assert(
-      JSON.stringify(readJson(CONFIG)) !== JSON.stringify(original),
-      'redo didn’t exclude again'
-    )
+    assert(canonical(readJson(CONFIG)) !== canonical(original), 'redo didn’t exclude again')
     await page.locator('.toast__action').click()
     await page.waitForFunction(() =>
       document.querySelector('.toast__message')?.textContent?.startsWith('Restored')
     )
     assert(
-      JSON.stringify(readJson(CONFIG)) === JSON.stringify(original),
+      canonical(readJson(CONFIG)) === canonical(original),
       'toast Undo didn’t restore pvorg.json'
     )
     return `“${before.gallery}” × Mountain Pass: excluded, undone (menu), redone (menu), undone (toast)`

@@ -54,7 +54,9 @@ export async function loadConfig(file: string): Promise<AppConfig> {
   try {
     data = JSON.parse(text.replace(/^\uFEFF/, ''))
   } catch (error) {
-    throw new ConfigError(`${name} isn’t valid JSON: ${(error as Error).message}.`)
+    const message = (error as Error).message
+    const where = /end of JSON/i.test(message) ? ' The file ends before the JSON is complete.' : ''
+    throw new ConfigError(`${name} isn’t valid JSON: ${message.replace(/\.$/, '')}.${where}`)
   }
   return validateConfig(data, name)
 }

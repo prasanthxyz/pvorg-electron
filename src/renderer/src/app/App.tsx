@@ -8,7 +8,7 @@ import { AlertHost } from '../components/Dialog'
 import { EmptyState, ToastRegion } from '../components/feedback'
 import { ImportDialog, openImport } from '../components/ImportDialog'
 import { MenuHost } from '../components/Menu'
-import { PreviewHost } from '../components/Preview'
+import { hidePreview, PreviewHost } from '../components/Preview'
 import FiltersPage from '../pages/FiltersPage'
 import LibraryPage from '../pages/LibraryPage'
 import MappingPage from '../pages/MappingPage'
@@ -168,6 +168,10 @@ export default function App() {
 
   useFocusOnNavigate()
   useMenuState(ready)
+
+  // A hover preview belongs to the card under the pointer; it never outlives the page.
+  const location = useLocation()
+  useEffect(() => hidePreview(), [location.pathname, ready])
 
   let content
   if (current?.phase === 'error') content = <StartupError status={current} />

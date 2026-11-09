@@ -142,11 +142,17 @@ export default function MappingPage({ kind }: { kind: MappingKind }) {
 
   const subtitle = !data
     ? ''
-    : pendingCount
-      ? counted(pendingCount, 'unsaved change')
-      : undecidedRows.length === 0
-        ? 'All videos decided'
-        : `${counted(undecidedRows.length, 'video')} need decisions`
+    : !data.rows.length
+      ? 'No videos'
+      : !data.columns.length
+        ? kind === 'galleries'
+          ? 'No galleries'
+          : 'No tags'
+        : pendingCount
+          ? counted(pendingCount, 'unsaved change')
+          : undecidedRows.length === 0
+            ? 'All videos decided'
+            : `${counted(undecidedRows.length, 'video')} need decisions`
 
   return (
     <div className="mapping">

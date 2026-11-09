@@ -16,6 +16,8 @@ mac:
     - dmg
   entitlementsInherit: build/entitlements.mac.plist
   hardenedRuntime: true
+  # Unsigned builds: never pick up whatever certificates the build machine's keychain holds.
+  identity: null
   notarize: false
 dmg:
   artifactName: ${name}-${version}.${ext}

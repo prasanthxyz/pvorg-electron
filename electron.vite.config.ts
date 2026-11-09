@@ -14,6 +14,6 @@ export default defineConfig({
       alias: { '@renderer': resolve('src/renderer/src') }
     },
     plugins: [react()],
-    build: { target: 'chrome140' }
+    build: { target: 'chrome140', minify: true }
   }
 })

@@ -17,13 +17,18 @@ import {
   type UndoEntry
 } from '../state/feedback'
 import { mappingSessions } from '../state/mapping'
-import { reloadLibrary, revealLabel } from '../state/status'
+import { reloadLibrary, revealLabel, status } from '../state/status'
 import { createStore, useStore } from '../state/store'
 import { Slideshow } from './viewer/Slideshow'
 import { VideoStage, type PlayerHandle } from './viewer/VideoStage'
 
 /** Viewer data outlives the page, so undo can update it from anywhere. */
 const viewerStore = createStore<ViewerState | null>(null)
+
+// A reload or another library makes the old combination meaningless: never render it again.
+status.subscribe(() => {
+  if (status.get()?.phase !== 'ready') viewerStore.set(null)
+})
 
 type Mode = 'sheet' | 'video'
 

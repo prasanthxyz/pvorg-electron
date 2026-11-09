@@ -173,13 +173,13 @@ export function registerIpc(ctx: IpcContext): void {
         : await dialog.showOpenDialog(options)
       if (result.canceled || !result.filePaths[0]) return { chosen: false }
       await ctx.settings.update({ libraryFile: path.resolve(result.filePaths[0]) })
-      library.load()
+      library.reloadSoon()
       return { chosen: true }
     },
     useDefaultLibrary: async () => {
       if (!ctx.settings.get().libraryFile) return { changed: false }
       await ctx.settings.update({ libraryFile: null })
-      library.load()
+      library.reloadSoon()
       return { changed: true }
     },
 

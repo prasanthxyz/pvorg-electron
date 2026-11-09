@@ -1035,7 +1035,8 @@
 .middle-truncate {
   display: flex;
   min-width: 0;
-  white-space: nowrap;
+  /* pre keeps the space where the text is split ("Beach Days"). */
+  white-space: pre;
 }
 
 .middle-truncate__start {
@@ -1239,7 +1240,7 @@
 }
 
 .import__list {
-  max-height: 132px;
+  max-height: 120px;
   overflow: auto;
   padding: var(--space-1) var(--space-2);
   border: 1px solid var(--border);
@@ -1261,4 +1262,10 @@
 
 .import__note {
   margin-top: var(--space-3);
+}
+
+.import__list .import__reason {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
 }

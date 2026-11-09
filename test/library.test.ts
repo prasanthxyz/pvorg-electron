@@ -343,3 +343,19 @@ function jpegWidth(data: Buffer): number {
   }
   return -1
 }
+
+describe('switching libraries', () => {
+  it('loads again after a run in progress instead of dropping the request', async () => {
+    const first = populated()
+    const second = populated()
+    let file = first.config
+    const library = await first.open({ configPath: () => file })
+    const run = library.load()
+    file = second.config
+    library.reloadSoon()
+    await run.done
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    await library.load().done
+    expect(library.configFile).toBe(second.config)
+  })
+})

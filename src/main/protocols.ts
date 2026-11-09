@@ -93,7 +93,8 @@ export function resolveMedia(
   library: Library,
   url: URL
 ): { file: string; kind: 'sheet' | 'gallery' | 'video' } | null {
-  const config = library.ready ? library.config : null
+  // The loaded library stays servable during a reload, so images already on screen don't fail.
+  const config = library.config
   if (!config) return null
   let parts: string[]
   try {
