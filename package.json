@@ -15,7 +15,8 @@
     "lint": "eslint .",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json",
-    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "typecheck:qa": "tsc --noEmit -p qa/tsconfig.json",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web && npm run typecheck:qa",
     "test": "vitest run",
     "dev": "electron-vite dev",
     "start": "electron-vite preview",
@@ -23,13 +24,16 @@
     "build:unpack": "npm run build && electron-builder --dir",
     "build:mac": "npm run build && electron-builder --mac",
     "build:win": "npm run build && electron-builder --win",
-    "build:linux": "npm run build && electron-builder --linux"
+    "build:linux": "npm run build && electron-builder --linux",
+    "fixture": "bash scripts/make-fixture.sh /tmp/pvorg-desktop-fixture",
+    "tour": "node qa/tour.mts"
   },
   "dependencies": {
     "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.0",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",

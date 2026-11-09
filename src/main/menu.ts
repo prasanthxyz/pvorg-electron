@@ -77,23 +77,35 @@ export function buildMenu(ctx: MenuContext): Menu {
     {
       label: 'File',
       submenu: [
-        { label: 'Reload Library', accelerator: 'CmdOrCtrl+R', click: command('reload') },
-        { label: 'Clean Up Stale Entries…', enabled: ready, click: command('cleanup') },
-        { label: 'Import from pvorg.yml…', enabled: ready, click: command('import') },
+        {
+          id: 'reload',
+          label: 'Reload Library',
+          accelerator: 'CmdOrCtrl+R',
+          click: command('reload')
+        },
+        {
+          id: 'cleanup',
+          label: 'Clean Up Stale Entries…',
+          enabled: ready,
+          click: command('cleanup')
+        },
+        { id: 'import', label: 'Import from pvorg.yml…', enabled: ready, click: command('import') },
         { type: 'separator' },
         {
+          id: 'save',
           label: 'Save Mapping Changes',
           accelerator: 'CmdOrCtrl+S',
           enabled: mapping && state.pendingChanges > 0,
           click: command('save')
         },
         {
+          id: 'revert',
           label: 'Revert Mapping Changes…',
           enabled: mapping && state.pendingChanges > 0,
           click: command('revert')
         },
         { type: 'separator' },
-        { label: 'Choose Library File…', click: command('chooseLibrary') },
+        { id: 'chooseLibrary', label: 'Choose Library File…', click: command('chooseLibrary') },
         ...(mac
           ? [{ type: 'separator' }, { role: 'close' }]
           : [{ type: 'separator' }, settingsItem, { type: 'separator' }, { role: 'quit' }])
@@ -103,11 +115,13 @@ export function buildMenu(ctx: MenuContext): Menu {
       label: 'Edit',
       submenu: [
         {
+          id: 'undo',
           label: state.canUndo ? `Undo ${state.canUndo}` : 'Undo',
           accelerator: 'CmdOrCtrl+Z',
           click: command('undo')
         },
         {
+          id: 'redo',
           label: state.canRedo ? `Redo ${state.canRedo}` : 'Redo',
           accelerator: 'Shift+CmdOrCtrl+Z',
           click: command('redo')
@@ -117,6 +131,7 @@ export function buildMenu(ctx: MenuContext): Menu {
         { role: 'copy' },
         { role: 'paste' },
         {
+          id: 'selectAll',
           label: 'Select All',
           accelerator: 'CmdOrCtrl+A',
           click: command('selectAll')
@@ -129,13 +144,14 @@ export function buildMenu(ctx: MenuContext): Menu {
         },
         { type: 'separator' },
         {
+          id: 'deleteSelection',
           label: 'Delete Selected Videos…',
           ...(library ? (mac ? { accelerator: 'Cmd+Backspace' } : key('Delete')) : {}),
           enabled: library && state.hasSelection,
           click: command('deleteSelection')
         },
         { type: 'separator' },
-        { label: 'Find', accelerator: 'CmdOrCtrl+F', click: command('find') }
+        { id: 'find', label: 'Find', accelerator: 'CmdOrCtrl+F', click: command('find') }
       ]
     },
     {
@@ -144,6 +160,7 @@ export function buildMenu(ctx: MenuContext): Menu {
         {
           label: 'Appearance',
           submenu: (['system', 'light', 'dark'] as const).map((choice) => ({
+            id: `appearance-${choice}`,
             label: choice === 'system' ? 'System' : choice === 'light' ? 'Light' : 'Dark',
             type: 'radio',
             checked: ctx.appearance === choice,

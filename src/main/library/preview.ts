@@ -22,6 +22,10 @@ export function searchPath(
   env: NodeJS.ProcessEnv = process.env,
   platform: NodeJS.Platform = process.platform
 ): string[] {
+  // QA runs can pin the search to chosen folders, to exercise the missing-tool warning.
+  if (env.PVORG_TOOLS_PATH !== undefined) {
+    return env.PVORG_TOOLS_PATH.split(path.delimiter).filter(Boolean)
+  }
   const dirs = (env.PATH ?? env.Path ?? '').split(path.delimiter).filter(Boolean)
   const extra =
     platform === 'darwin'
