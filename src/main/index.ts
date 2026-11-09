@@ -33,7 +33,7 @@ import { SettingsStore } from './settings'
 import { ThumbnailCache } from './thumbnails'
 import icon from '../../resources/icon.png?asset'
 
-const HOMEPAGE = 'https://github.com/prasanthxyz/PP-Video-Organizer'
+const HOMEPAGE = 'https://github.com/prasanthxyz/pvorg-electron'
 const isDev = !app.isPackaged
 const devServer = isDev ? process.env.ELECTRON_RENDERER_URL : undefined
 

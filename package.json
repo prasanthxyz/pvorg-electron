@@ -5,7 +5,7 @@
   "main": "./out/main/index.js",
   "author": "Prasanth P <prasanthxyz@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/prasanthxyz/PP-Video-Organizer",
+  "homepage": "https://github.com/prasanthxyz/pvorg-electron",
   "private": true,
   "engines": {
     "node": ">=22.12"
